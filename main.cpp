@@ -17,7 +17,7 @@ void Print(const string& text) {
 	cout << string(leftMargin, ' ') << text << endl;
 }
 
-template <typename T>
+template <typename T>asdasd
 T check()
 {
 	T value;
