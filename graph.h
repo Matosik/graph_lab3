@@ -108,7 +108,7 @@ public:
         }
     }
     vector<V> deep_cool(V v) {
-        if (find_index_V(v) == -1) { throw("Такой вершины нет."); }
+        if (find_index_V(v) == -1) { throw("Такой вершины нет.\n"); }
         vector<V> result;
         deep_helper(v, result);
         whitewash();

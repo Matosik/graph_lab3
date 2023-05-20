@@ -14,10 +14,10 @@ void Print(const string& text) {
 	int textWidth = static_cast<int>(text.size());
 
 	int leftMargin = (screenWidth - textWidth) / 2;
-	cout << string(leftMargin, ' ') << text << endl;
+	cout << string(leftMargin, ' ') << text;
 }
 
-template <typename T>asdasd
+template <typename T>
 T check()
 {
 	T value;
@@ -28,34 +28,22 @@ T check()
 		while (cin.get() != '\n')
 		{
 			system("cls");
-			Print( "\tВведите корректные данные: ");
+			Print( "Введите корректные данные: ");
 		}
 	}
 	return value;
 }
-template <typename T>
-struct is_valid_V : std::disjunction<
-	is_same<T, int>,
-	is_same<T, std::string>,
-	is_same<T, char>,
-	is_same<T, double>
-> {};
 
-template <typename T>
-struct is_valid_D : std::disjunction<
-	is_same<T, int>,
-	is_same<T, double>
-> {};
 void next() {
-	Print("\n\n\tНажмите любую кнопку, чтобы продолжить");
+	Print("Нажмите любую кнопку, чтобы продолжить\n");
 	_getch();
 }
 template <typename V>
 vector<V>  selection_pair() {
-	Print("\n\t\tВыбор пары вершин");
-	Print( "\n\tВведите имя вершины (откуда): ");
+	Print("Выбор пары вершин\n");
+	Print( "Введите имя вершины (откуда): ");
 	V v_from = check<V>();
-	Print ( "\n\tВведите имя вершины (куда): ");
+	Print ( "Введите имя вершины (куда): ");
 	V v_to = check<V>();
 	vector<V> result;
 	result.push_back(v_from);
@@ -69,7 +57,7 @@ void Edd_vertex(Graph<V,D> &G) {
 	V v = check<V>();
 	try {
 		G.add_V(v);
-		Print ("\t\tВершина успешно добавлена");
+		Print ("Вершина успешно добавлена\n");
 	}
 	catch (const char* ex) {
 		Print(ex);
@@ -80,36 +68,77 @@ void Edd_vertex(Graph<V,D> &G) {
 
 
 template <typename V, typename D>
-typename enable_if<is_valid_V<V>::value&& is_valid_D<D>::value, void>::type
-Edd_edge(Graph<V,D> &G){
-	if (G.size_g() < 2) {
-		return;
-	}
+void Edd_edge(Graph<V,D> &G){
+	if (G.size_g() < 2) {return;}
 	system("cls");
-	Print("\n\tВведите вес ребра: ");
+	Print("Введите вес ребра: ");
 	D d = check<D>();
 	vector<V> pair = selection_pair<V>();
 	try {
 		G.add_E(pair[0], pair[1], d);
-		Print("Ребро из вершины '" + to_string(pair[0]) +"' в вершину '" + to_string(pair[1]) + "' успешно проведено");
+		Print("Ребро успешно проведено\n");
 	}
 	catch (const char* ex) {
 		Print(ex);
 	}
 	next();
 }
+template <typename V, typename D>
+void delete_V(Graph<V, D>& G) {
+	if (G.size_g() < 1) { return; }
+	system("cls");
+	Print("Введите имя вершины: ");
+	V v = check<V>();
+	try {
+		G.delete_V(v);
+		Print("Вершина удалена\n");
+	}
+	catch (const char* ex) {
+		Print(ex);
+	}
+	next();
 
+}
+template <typename V, typename D>
+void delete_E(Graph<V, D>& G) {
+	if (G.size_g() < 2) { return; }
+	system("cls");
+	vector<V> pair = selection_pair<V>();
+	try {
+		G.delete_E(pair[0], pair[1]);
+	}
+	catch (const char* ex) {
+		Print(ex);
+	}
+}
+template <typename V, typename D>
+void deep_walk(Graph<V, D>& G) {
+	if (G.size_g() < 1) { return; }
+	system("cls");
+	Print("Введите стртовую точку для обхода в глубину: ");
+	V v = check<V>();
+	try {
+		vector<V> result = G.deep_cool(v);
+		for (int i = 0; i < result.size(); i++) {
+			//Print(result[i]);
+		}
+	}
+	catch (const char* ex) {
+		Print(ex);
+	}
+
+}
 int menu_1() {
 	while (true) {
 		system("cls");
 		Print( "\n\n\n\n\n");
-		Print( "Добавить вершину         - [ 1 ]");
-		Print( "Добавить ребро           - [ 2 ]");
-		Print( "Удалить вершину          - [ 3 ]");
-		Print( "Удалить ребро            - [ 4 ]");
-		Print( "Обход в глубину          - [ 5 ]");
-		Print( "Найти мин путь           - [ 6 ]");
-		Print( " Лучшее место для склада  - [ 7 ]\n");
+		Print( "Добавить вершину         - [ 1 ]\n");
+		Print( "Добавить ребро           - [ 2 ]\n");
+		Print( "Удалить вершину          - [ 3 ]\n");
+		Print( "Удалить ребро            - [ 4 ]\n");
+		Print( "Обход в глубину          - [ 5 ]\n");
+		Print( "Найти мин путь           - [ 6 ]\n");
+		Print( " Лучшее место для склада  - [ 7 ]\n\n");
 		Print( "Назад                    - [esc]");
 		int key = _getch();
 		if (key == 49 || key == 50 || key == 51 || key == 52 || key == 53 || key == 54 || key == 55 || key == 27) { return key; }
@@ -129,10 +158,10 @@ menu:
 		Edd_edge<V, D>(G);
 		goto menu;
 	case 51:
-		//delete_V<V, D>(G);
+		delete_V<V, D>(G);
 		goto menu;
 	case 52:
-		//delete_D<V, D>(G);
+		delete_E<V, D>(G);
 		goto menu;
 	case 53:
 		goto menu;
@@ -151,15 +180,15 @@ here:
 	while (true) {
 		system("cls");
 		Print ( "\n\n\n\n\n");
-		Print( "Выбрать тип данных вершина и вес ребра");
-		Print( "Ребро -  int,    вес - int:	 [ 1 ]");
-		Print("Ребро -  string, вес - int:	 [ 2 ]");
-		Print ("Ребро -  char,   вес - int:	 [ 3 ]");
-		Print ("Ребро -  double, вес - int:	 [ 4 ]");
-		Print ("  Ребро -  int,    вес - double:[ 5 ]");
-		Print ("  Ребро -  string, вес - double:[ 6 ]");
-		Print ("  Ребро -  char,   вес - double:[ 7 ]");
-		Print ("  Ребро -  double, вес - double:[ 8 ]");
+		Print( "Выбрать тип данных вершина и вес ребра\n");
+		Print( "Ребро -  int,    вес - int:	 [ 1 ]\n");
+		Print("Ребро -  string, вес - int:	 [ 2 ]\n");
+		Print ("Ребро -  char,   вес - int:	 [ 3 ]\n");
+		Print ("Ребро -  double, вес - int:	 [ 4 ]\n");
+		Print ("  Ребро -  int,    вес - double:[ 5 ]\n");
+		Print ("  Ребро -  string, вес - double:[ 6 ]\n");
+		Print ("  Ребро -  char,   вес - double:[ 7 ]\n");
+		Print ("  Ребро -  double, вес - double:[ 8 ]\n\n");
 
 		Print( "Выход - [esc]");
 		int key = _getch();
