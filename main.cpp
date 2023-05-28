@@ -1,7 +1,6 @@
 #include "graph.h"
 #include <windows.h>
 #include <conio.h>
-#include <type_traits>
 using namespace std;
 
 
@@ -53,7 +52,7 @@ vector<V>  selection_pair() {
 template <typename V, typename D>
 void Edd_vertex(Graph<V,D> &G) {
 	system("cls");
-	Print ("\n\tВведите имя вершины, которую хотете добавить: ");
+	Print ("Введите имя вершины, которую хотете добавить: ");
 	V v = check<V>();
 	try {
 		G.add_V(v);
@@ -119,14 +118,36 @@ void deep_walk(Graph<V, D>& G) {
 	V v = check<V>();
 	try {
 		vector<V> result = G.deep_cool(v);
+		Print("Обход в глубину:\n");
 		for (int i = 0; i < result.size(); i++) {
-			//Print(result[i]);
+			cout<<"\t\t\t\t\t" << result[i]<<endl;
 		}
 	}
 	catch (const char* ex) {
 		Print(ex);
 	}
-
+	next();
+}
+template <typename V,typename D>
+void min_way(Graph<V,D> &G) {
+	if (G.size_g() < 2) { return; }
+	system("cls");
+	vector<V> pairr = selection_pair<V>();
+	try {
+		pair<vector<V>, D> p = G.belman_ford(pairr[0], pairr[1]);
+		Print("Вес кратчайшего пути  - ");
+		cout << p.second << endl;
+		Print("Путь :\n");
+		vector<V> result = p.first;
+		for (int i = 0; i < result.size(); i++) {
+			cout << "\t\t\t\t\t" << result[i] << endl;
+		}
+	}
+	catch(const char* ex){
+		Print(ex);
+	}
+	next();
+	
 }
 int menu_1() {
 	while (true) {
@@ -138,16 +159,54 @@ int menu_1() {
 		Print( "Удалить ребро            - [ 4 ]\n");
 		Print( "Обход в глубину          - [ 5 ]\n");
 		Print( "Найти мин путь           - [ 6 ]\n");
-		Print( " Лучшее место для склада  - [ 7 ]\n\n");
-		Print( "Назад                    - [esc]");
+		Print( "Лучшее место для склада  - [ 7 ]\n");
+		Print("Визуализация графа       - [ 8 ]\n\n");
+		Print( "Назад - [esc]");
 		int key = _getch();
-		if (key == 49 || key == 50 || key == 51 || key == 52 || key == 53 || key == 54 || key == 55 || key == 27) { return key; }
+		if (key == 49 || key == 50 || key == 51 || key == 52 || key == 53 || key == 54 || key == 55 || key ==56 || key==57 || key == 27) { return key; }
 	}
+}
+template <typename V , typename D>
+void good_stor(Graph<V,D> G) {
+	if (G.size_g() < 2) { return; }
+	system("cls");
+	try {
+		V name_store = G.good_place();
+		Print("Лучшее место для склада:\n");
+		cout << "\t\t\t\t\t\t " << name_store<<endl;
+	}
+	catch(const char* ex){
+		Print(ex);
+	}
+	next();
+}
+void ready_graph(Graph<int,int> &G) {
+	G.clean();
+	G.add_V(1);
+	G.add_V(2);
+	G.add_V(3);
+	G.add_V(4);
+	G.add_V(5);
+	G.add_V(6);
+	G.add_V(7);
+	G.add_V(8);
+	G.add_E(1,2,30);
+	G.add_E(1,4,5);
+	G.add_E(1,3,20);
+	G.add_E(4,3,12);
+	G.add_E(2,5,2);
+	G.add_E(2,6,12);
+	G.add_E(3,5,16);
+	G.add_E(3,8,60);
+	G.add_E(6,8,40);
+	G.add_E(5,7,4);
+	G.add_E(7, 8, 21);
 }
 
 template <typename V, typename D>
 void main_menu() {
 	Graph<V, D> G;
+	Graph<int, int> G1;
 menu:
 	int key = menu_1();
 	switch (key) {
@@ -164,10 +223,16 @@ menu:
 		delete_E<V, D>(G);
 		goto menu;
 	case 53:
+		deep_walk<V,D>(G);
 		goto menu;
 	case 54:
+		min_way<V,D>(G);
 		goto menu;
 	case 55:
+		good_stor<V,D>(G);
+		goto menu;
+	case 56:
+		G.visualizeGraph();
 		goto menu;
 	case 27:
 		return;
@@ -181,14 +246,14 @@ here:
 		system("cls");
 		Print ( "\n\n\n\n\n");
 		Print( "Выбрать тип данных вершина и вес ребра\n");
-		Print( "Ребро -  int,    вес - int:	 [ 1 ]\n");
-		Print("Ребро -  string, вес - int:	 [ 2 ]\n");
-		Print ("Ребро -  char,   вес - int:	 [ 3 ]\n");
-		Print ("Ребро -  double, вес - int:	 [ 4 ]\n");
-		Print ("  Ребро -  int,    вес - double:[ 5 ]\n");
-		Print ("  Ребро -  string, вес - double:[ 6 ]\n");
-		Print ("  Ребро -  char,   вес - double:[ 7 ]\n");
-		Print ("  Ребро -  double, вес - double:[ 8 ]\n\n");
+		Print("Ребро  -  int,    вес - int:	 [ 1 ] \n");
+		Print("Ребро  -  string, вес - int:	 [ 2 ] \n");
+		Print("Ребро  -  char,   вес - int:	 [ 3 ] \n");
+		Print("Ребро  -  double, вес - int:	 [ 4 ] \n");
+		Print("Ребро  -  int,    вес - double: [ 5 ]\n");
+		Print("Ребро  -  string, вес - double: [ 6 ]\n");
+		Print("Ребро  -  char,   вес - double: [ 7 ]\n");
+		Print(" Ребро  -  double, вес - double: [ 8 ]\n\n");
 
 		Print( "Выход - [esc]");
 		int key = _getch();
