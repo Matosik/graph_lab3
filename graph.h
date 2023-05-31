@@ -65,9 +65,16 @@ private:
             for (Edge edge : graph[v].edges) {
                 int u = find_index_V(edge.vertex);
                 if (dist[v] != numeric_limits<D>::max() && dist[v] + edge.weight < dist[u]) {
-                    throw "Graph contains a negative-weight cycle";
+                    throw "В графе присутствует отрицательный цикл\n";
                 }
             }
+        }
+        // Проверка недостижимости
+        int to_index = find_index_V(to);
+        if (dist[to_index] == numeric_limits<D>::max()) {
+            // Если вершина "to" недостижима, возвращаем максимальное значение
+            distance = numeric_limits<D>::max();
+            return;
         }
 
         // Храним кратчайший путь от from до to
@@ -81,7 +88,7 @@ private:
     }
 public:
     void visualizeGraph() const {
-        std::ofstream dotFile("graph.dot");
+        ofstream dotFile("graph.dot");
         dotFile << "digraph G {\n";
         for (const auto& vertex : graph) {
             dotFile << "    " << vertex.name << ";\n";
@@ -89,18 +96,18 @@ public:
         for (const auto& vertex : graph) {
             for (const auto& edge : vertex.edges) {
                 dotFile << "    " << vertex.name << " -> " << edge.vertex << " [label=\"" << edge.weight << "\"];\n";
-            }
+            }////
         }
 
         dotFile << "}\n";
         dotFile.close();
 
         // Generate the graph image using GraphViz
-        std::system("dot -Tpng graph.dot -o graph.png");
+        system("dot -Tpng graph.dot -o graph.png");
 
         // Open the graph image using the default image viewer
 #ifdef _WIN32
-        std::system("start graph.png");
+        system("start graph.png");
 #endif
     }
     ~Graph() {
@@ -190,35 +197,42 @@ public:
         whitewash();
         return result;
     }
-    pair<vector<V>, D> belman_ford(V from , V to) {
-        if (find_index_V(from) == -1) { throw "Нет вершины (откуда)"; }
-        if (find_index_V(to) == -1) { throw"Нет вершины (куда)"; }
+    pair<vector<V>, D> belman_ford(V from, V to) {
+        if (find_index_V(from) == -1) { throw "Нет вершины (откуда)\n"; }
+        if (find_index_V(to) == -1) { throw"Нет вершины (куда)\n"; }
         vector<V> result;
         D distanse = 0;
         ford_helper(from, to, result, distanse);
+        if (distanse == numeric_limits<D>::max()) { throw"Вершина недостижима :(\n"; }
         return pair<vector<V>, D>(result, distanse);
     }
     V good_place() {
-        D min = numeric_limits<D>::max();
-        int id=0;
+        D mina = numeric_limits<D>::max();
+        int id = -1;
         for (int i = 0; i < graph.size(); i++) {
-            D max_all = numeric_limits<D>::max();
+            D max_all = numeric_limits<D>::min();
             for (int j = 0; j < graph.size(); j++) {
                 if (j == i) { continue; }
-                pair<vector<V>, D> p = belman_ford(graph[i].name, graph[j].name);
-                if(p.second<max_all){
-                    max_all = p.second;
+                try {
+                    pair<vector<V>, D> p = belman_ford(graph[i].name, graph[j].name);
+
+                    if (p.second > max_all) {
+                        max_all = p.second;
+                    }
+                }
+                catch (const char* ex) {
+                    continue;
                 }
             }
-            if (max_all < min) {
-                min = max_all;
+            if (max_all < mina && max_all != numeric_limits<D>::min()) {
+                mina = max_all;
                 id = i;
             }
         }
+        if (id == -1) { throw "Error find\n"; }
         return graph[id].name;
     }
 };
-
 
 template class Graph<int, int>;
 template class Graph<string, int>;
